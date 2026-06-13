@@ -20,7 +20,34 @@ export type ErrorEvent = {
   message: string;
 };
 
-export type AgentEvent = ProgressEvent | ResultEvent | ErrorEvent;
+export type WarningEvent = {
+  type: "warning";
+  step: string;
+  message: string;
+};
+
+export type ValidationIssue = {
+  phase: "syntax" | "semantic" | "safety" | "parse";
+  severity: "error" | "warning";
+  code: string;
+  message: string;
+};
+
+export type FinalErrorEvent = {
+  type: "final_error";
+  sql?: string;
+  validation_phase?: string;
+  validation_issues?: ValidationIssue[];
+  syntax_correction_count?: number;
+  semantic_correction_count?: number;
+};
+
+export type AgentEvent =
+  | ProgressEvent
+  | ResultEvent
+  | ErrorEvent
+  | WarningEvent
+  | FinalErrorEvent;
 
 export type StepState = {
   step: string;
@@ -37,4 +64,7 @@ export type ChatMessage = {
   steps?: StepState[];
   result?: unknown;
   error?: string;
+  warnings?: string[];
+  finalError?: FinalErrorEvent;
+  referenceSql?: string;
 };

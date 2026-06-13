@@ -2,7 +2,7 @@
 SQL 校验节点
 
 负责在真正执行查询前，用数据库解析一次生成的 SQ
-校验结果不在这里决定流程走向，而是通过 state["error"] 交给 graph.py 的条件边判断
+校验结果不在这里决定流程走向，而是通过结构化校验状态交给 graph.py 的条件边判断
 """
 
 from langgraph.runtime import Runtime
@@ -14,7 +14,7 @@ from app.repositories.mysql.dw.dw_mysql_repository import DWMySQLRepository
 
 
 async def validate_sql(state: DataAgentState, runtime: Runtime[DataAgentContext]):
-    """校验 SQL，并返回 error 字段控制后续条件分支"""
+    """校验 SQL，并返回结构化校验状态控制后续条件分支"""
 
     writer = runtime.stream_writer
     step = "校验SQL"
@@ -32,12 +32,30 @@ async def validate_sql(state: DataAgentState, runtime: Runtime[DataAgentContext]
             await dw_mysql_repository.validate(sql)
             writer({"type": "progress", "step": step, "status": "success"})
             logger.info("SQL语法正确")
-            return {"error": None}
+            return {
+                "error": None,
+                "validation_phase": "none",
+                "validation_issues": [],
+                "severity": "none",
+            }
         except Exception as e:
             # 不抛出异常中断图执行，而是把错误写入状态，供条件分支进入 correct_sql
-            logger.info(f"SQL语法错误：{str(e)}")
+            message = str(e)
+            logger.info(f"SQL语法错误：{message}")
             writer({"type": "progress", "step": step, "status": "success"})
-            return {"error": str(e)}
+            return {
+                "error": message,
+                "validation_phase": "syntax",
+                "validation_issues": [
+                    {
+                        "phase": "syntax",
+                        "severity": "error",
+                        "code": "SQL_EXPLAIN_FAILED",
+                        "message": message,
+                    }
+                ],
+                "severity": "error",
+            }
 
     except Exception as e:
         logger.error(f"{step} failed: {e}")

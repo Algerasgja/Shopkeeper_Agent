@@ -7,8 +7,9 @@ State 是 LangGraph 各节点之间传递和更新的共享数据
 SQL 生成闭环会继续写入候选 SQL 以及校验错误信息，用于控制校正或执行分支
 """
 
-from typing import TypedDict
+from typing import Literal, NotRequired, TypedDict
 
+from app.agent.slots.slot_schema import SlotState
 from app.entities.column_info import ColumnInfo
 from app.entities.metric_info import MetricInfo
 from app.entities.value_info import ValueInfo
@@ -60,6 +61,15 @@ class DBInfoState(TypedDict):
     version: str
 
 
+class ValidationIssue(TypedDict):
+    """一次 SQL 校验发现的问题或告警"""
+
+    phase: Literal["syntax", "semantic", "safety", "parse"]
+    severity: Literal["error", "warning"]
+    code: str
+    message: str
+
+
 class DataAgentState(TypedDict):
     """一次问数链路中的核心状态"""
 
@@ -76,4 +86,15 @@ class DataAgentState(TypedDict):
 
     sql: str  # 生成或校正后的SQL
 
-    error: str  # 校验SQL时出现的错误信息
+    error: str  # 兼容旧逻辑的校验错误信息，后续流程优先使用结构化校验状态
+    validation_phase: NotRequired[
+        Literal["none", "syntax", "semantic", "safety", "parse"]
+    ]  # 最近一次校验所在阶段
+    validation_issues: NotRequired[list[ValidationIssue]]  # 最近一次校验问题列表
+    severity: NotRequired[Literal["none", "error", "warning"]]  # 最近一次校验最高级别
+
+    query_slots: SlotState  # 大模型从用户问题抽取的语义槽位（物理命名）
+    sql_slots: SlotState  # sqlglot 从最终 SQL 解析出的语义槽位
+    correction_count: int  # 兼容旧逻辑的总修正计数
+    syntax_correction_count: NotRequired[int]  # 语法校验失败触发的修正次数
+    semantic_correction_count: NotRequired[int]  # 语义校验失败触发的修正次数

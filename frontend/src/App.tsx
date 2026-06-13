@@ -32,14 +32,18 @@ function makeId() {
   return crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
-function upsertStep(steps: StepState[] = [], event: Extract<AgentEvent, { type: "progress" }>) {
-  const next = steps.filter((item) => item.step !== event.step);
+function upsertStepStatus(steps: StepState[] = [], step: string, status: StepState["status"]) {
+  const next = steps.filter((item) => item.step !== step);
   next.push({
-    step: event.step,
-    status: event.status,
+    step,
+    status,
     updatedAt: Date.now(),
   });
   return next;
+}
+
+function upsertStep(steps: StepState[] = [], event: Extract<AgentEvent, { type: "progress" }>) {
+  return upsertStepStatus(steps, event.step, event.status);
 }
 
 export default function App() {
@@ -108,6 +112,27 @@ export default function App() {
               status: "done",
               content: summarizeResult(event.data),
               result: event.data,
+            };
+          }
+
+          if (event.type === "warning") {
+            return {
+              ...message,
+              warnings: [...(message.warnings ?? []), `${event.step}：${event.message}`],
+            };
+          }
+
+          if (event.type === "final_error") {
+            const sql = event.sql?.trim();
+            return {
+              ...message,
+              status: "done",
+              content: sql ? "建议使用 SQL 语句：" : "本次未生成可推荐的 SQL。",
+              error: undefined,
+              warnings: [],
+              finalError: event,
+              referenceSql: sql || undefined,
+              steps: upsertStepStatus(message.steps, "最终错误", "error"),
             };
           }
 

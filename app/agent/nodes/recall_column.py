@@ -53,9 +53,7 @@ async def recall_column(state: DataAgentState, runtime: Runtime[DataAgentContext
         for keyword in keywords:
             # 查询词必须先转成向量，才能和第 9 章写入 Qdrant 的字段向量做相似度检索
             embedding = await embedding_client.aembed_query(keyword)
-            current_column_infos: list[
-                ColumnInfo
-            ] = await column_qdrant_repository.search(embedding)
+            current_column_infos: list[ColumnInfo] = await column_qdrant_repository.search(embedding)
             for column_info in current_column_infos:
                 if column_info.id not in column_info_map:
                     column_info_map[column_info.id] = column_info

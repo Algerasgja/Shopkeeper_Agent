@@ -8,7 +8,7 @@ services:
       MYSQL_USER: didilili
       MYSQL_PASSWORD: dili123
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./mysql:/docker-entrypoint-initdb.d
@@ -23,7 +23,7 @@ services:
       discovery.type: single-node
       xpack.security.enabled: "false"
     ports:
-      - "9200:9200"
+      - "9201:9200"
     volumes:
       - es_data:/usr/share/elasticsearch/data
   kibana:

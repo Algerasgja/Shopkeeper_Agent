@@ -2,17 +2,46 @@
  * 聊天消息气泡组件
  * 组合展示用户问题、智能体回复、执行流程和结果表格
  */
-import { Bot, Copy, UserRound } from "lucide-react";
+import { AlertTriangle, Bot, Code2, Copy, UserRound } from "lucide-react";
 import { ResultTable } from "./ResultTable";
 import { StepRail } from "./StepRail";
 import { cn, formatTime, toClipboardText } from "../lib/format";
 import type { ChatMessage } from "../types/agent";
 
+function WarningList({ warnings }: { warnings: string[] }) {
+  if (warnings.length === 0) return null;
+
+  return (
+    <div className="mt-3 space-y-1 border border-brass/25 bg-brass/10 px-3 py-2 text-sm text-ink/75">
+      {warnings.map((warning, index) => (
+        <div key={`${warning}-${index}`} className="flex gap-2">
+          <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-brass" aria-hidden="true" />
+          <span>{warning}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function SuggestedSqlPanel({ sql }: { sql: string }) {
+  return (
+    <section className="mt-3 overflow-hidden border border-moss/25 bg-moss/10 shadow-line">
+      <div className="flex items-center gap-2 border-b border-moss/15 px-3 py-2 text-sm font-semibold text-ink">
+        <Code2 className="h-4 w-4 text-moss" aria-hidden="true" />
+        建议使用 SQL 语句
+      </div>
+      <pre className="max-h-72 overflow-auto bg-white/70 px-3 py-3 text-sm leading-6 text-ink">
+        <code>{sql}</code>
+      </pre>
+    </section>
+  );
+}
+
 export function MessageBubble({ message }: { message: ChatMessage }) {
   const isUser = message.role === "user";
 
   const copy = async () => {
-    const text = message.result ? toClipboardText(message.result) : message.content;
+    const text = message.referenceSql ?? (message.result ? toClipboardText(message.result) : message.content);
     await navigator.clipboard.writeText(text);
   };
 
@@ -54,6 +83,8 @@ export function MessageBubble({ message }: { message: ChatMessage }) {
             </div>
           )}
 
+          {!isUser && !message.referenceSql && <WarningList warnings={message.warnings ?? []} />}
+          {!isUser && message.referenceSql && <SuggestedSqlPanel sql={message.referenceSql} />}
           {!isUser && <StepRail steps={message.steps} />}
           {!isUser && message.result !== undefined && <ResultTable data={message.result} />}
 

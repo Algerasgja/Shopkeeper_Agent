@@ -1,0 +1,82 @@
+2026-06-04 23:02:59.419 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:272 - 保存表信息和字段信息到 Meta MySQL
+2026-06-04 23:03:14.538 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:275 - 为字段信息建立向量索引
+2026-06-04 23:03:15.336 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:278 - 为字段取值建立全文索引
+2026-06-04 23:03:15.357 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:284 - 保存指标信息到数据库成功
+2026-06-04 23:03:17.281 | INFO     | request_id - 1 | app.services.meta_knowledge_service:build:288 - 为指标信息建立向量索引成功
+2026-06-04 23:10:39.718 | INFO     | request_id - a8783538-b14b-4aa5-8e90-76bac3d08021 | app.agent.nodes.extract_keywords:extract_keywords:50 - 抽取关键词成功: ['查询华东地区 2025 年第一季度销售额最高的前 5 个商品', '华东地区', '第一季度', '商品', '最高', '销售额', '查询']
+2026-06-04 23:10:41.000 | ERROR    | request_id - a8783538-b14b-4aa5-8e90-76bac3d08021 | app.agent.nodes.recall_value:recall_value:67 - 召回字段取值 failed: Error code: 403 - {'error': {'message': 'This IP address is already associated with another free account. Only one free account is allowed per IP address. Please upgrade your plan or use a different network.', 'type': 'permission_error', 'code': 'ip_account_conflict'}}
+2026-06-04 23:11:11.326 | INFO     | request_id - 373d82ee-ca4f-453c-b2a4-d1b577eb0014 | app.agent.nodes.extract_keywords:extract_keywords:50 - 抽取关键词成功: ['查询华东地区 2025 年第一季度销售额最高的前 5 个商品', '华东地区', '第一季度', '商品', '最高', '销售额', '查询']
+2026-06-04 23:11:11.899 | ERROR    | request_id - 373d82ee-ca4f-453c-b2a4-d1b577eb0014 | app.agent.nodes.recall_value:recall_value:67 - 召回字段取值 failed: Error code: 403 - {'error': {'message': 'This IP address is already associated with another free account. Only one free account is allowed per IP address. Please upgrade your plan or use a different network.', 'type': 'permission_error', 'code': 'ip_account_conflict'}}
+2026-06-07 15:16:01.929 | INFO     | request_id - 46f3d8c3-c2d7-4f8d-b8c0-922599444bc7 | app.agent.nodes.extract_keywords:extract_keywords:50 - 抽取关键词成功: ['查询华东地区 2025 年第一季度销售额最高的前 5 个商品', '华东地区', '第一季度', '商品', '最高', '销售额', '查询']
+2026-06-07 15:16:13.934 | INFO     | request_id - 46f3d8c3-c2d7-4f8d-b8c0-922599444bc7 | app.agent.nodes.recall_value:recall_value:63 - 检索到字段取值：['dim_region.region_name.华东']
+2026-06-07 15:16:16.043 | INFO     | request_id - 46f3d8c3-c2d7-4f8d-b8c0-922599444bc7 | app.agent.nodes.recall_metric:recall_metric:65 - 检索到指标信息：['GMV', 'AOV']
+2026-06-07 15:16:16.487 | INFO     | request_id - 46f3d8c3-c2d7-4f8d-b8c0-922599444bc7 | app.agent.nodes.merge_retrieved_info:merge_retrieved_info:143 - 合并后的表信息：['dim_region', 'dim_date', 'dim_product', 'fact_order', 'dim_customer']
+2026-06-07 15:16:16.487 | INFO     | request_id - 46f3d8c3-c2d7-4f8d-b8c0-922599444bc7 | app.agent.nodes.merge_retrieved_info:merge_retrieved_info:146 - 合并后的指标信息：['GMV', 'AOV']
+2026-06-07 15:16:19.900 | INFO     | request_id - 46f3d8c3-c2d7-4f8d-b8c0-922599444bc7 | app.agent.nodes.filter_metric:filter_metric:54 - 过滤后的指标信息：['GMV']
+2026-06-07 15:16:25.085 | INFO     | request_id - 46f3d8c3-c2d7-4f8d-b8c0-922599444bc7 | app.agent.nodes.filter_table:filter_table:60 - 过滤后的表信息：['dim_region', 'dim_product', 'fact_order']
+2026-06-07 15:16:25.102 | INFO     | request_id - 46f3d8c3-c2d7-4f8d-b8c0-922599444bc7 | app.agent.nodes.add_extra_context:add_extra_context:36 - 数据库信息：{'dialect': 'mysql', 'version': '8.0.46'}
+2026-06-07 15:16:25.102 | INFO     | request_id - 46f3d8c3-c2d7-4f8d-b8c0-922599444bc7 | app.agent.nodes.add_extra_context:add_extra_context:37 - 日期信息：{'date': '2026-06-07', 'weekday': 'Sunday', 'quarter': 'Q2'}
+2026-06-07 15:16:29.255 | INFO     | request_id - 46f3d8c3-c2d7-4f8d-b8c0-922599444bc7 | app.agent.nodes.generate_sql:generate_sql:63 - 生成的SQL：SELECT
+  dp.product_name AS 商品名称,
+  SUM(fo.order_amount) AS 销售额
+FROM fact_order AS fo
+INNER JOIN dim_region AS dr
+  ON fo.region_id = dr.region_id
+INNER JOIN dim_product AS dp
+  ON fo.product_id = dp.product_id
+WHERE dr.region_name = '华东'
+  AND fo.date_id BETWEEN 20250101 AND 20250331
+GROUP BY dp.product_id, dp.product_name
+ORDER BY 销售额 DESC
+LIMIT 5;
+2026-06-07 15:16:29.278 | INFO     | request_id - 46f3d8c3-c2d7-4f8d-b8c0-922599444bc7 | app.agent.nodes.validate_sql:validate_sql:34 - SQL语法正确
+2026-06-07 15:16:29.293 | INFO     | request_id - 46f3d8c3-c2d7-4f8d-b8c0-922599444bc7 | app.agent.nodes.run_sql:run_sql:29 - SQL执行结果：[{'商品名称': 'Galaxy S24 Ultra', '销售额': 28497.0}, {'商品名称': 'Mate 60 Pro', '销售额': 27996.0}, {'商品名称': 'iPhone 15 Pro', '销售额': 17998.0}, {'商品名称': '戴森 V15 吸尘器', '销售额': 10998.0}, {'商品名称': '美的空调 KFR-35GW', '销售额': 6400.0}]
+2026-06-13 15:04:16.052 | INFO     | request_id - 1 | app.agent.nodes.final_error:final_error:30 - SQL 修正达到上限，返回最终错误：{'type': 'final_error', 'sql': 'select bad_col from fact_order', 'validation_phase': 'syntax', 'validation_issues': [{'phase': 'syntax', 'severity': 'error', 'code': 'SQL_EXPLAIN_FAILED', 'message': "Unknown column 'bad_col'"}], 'syntax_correction_count': 2, 'semantic_correction_count': 0}
+2026-06-13 15:04:16.053 | INFO     | request_id - 1 | app.agent.nodes.validate_sql:validate_sql:44 - SQL语法错误：Unknown column 'bad_col'
+2026-06-13 15:04:16.062 | INFO     | request_id - 1 | app.agent.nodes.validate_sql_slot:validate_sql_slot:77 - 语义槽位不一致：缺少用户要求的过滤条件列：dim_region.region_name（is_precise=True）
+2026-06-13 15:04:16.064 | ERROR    | request_id - 1 | app.agent.nodes.validate_sql_slot:validate_sql_slot:43 - 语义槽位校验 解析 SQL 槽位失败，跳过语义校验: Expected table name but got <Token token_type: TokenType.SENTINEL, text: SENTINEL, line: 1, col: 1, start: 0, end: 0, comments: []>. Line 1, Col: 13.
+  select * [4mfrom[0m
+2026-06-13 15:04:16.065 | INFO     | request_id - 1 | app.agent.nodes.validate_sql:validate_sql:34 - SQL语法正确
+2026-06-13 15:04:46.007 | INFO     | request_id - 1 | app.agent.nodes.final_error:final_error:30 - SQL 修正达到上限，返回最终错误：{'type': 'final_error', 'sql': 'select bad_col from fact_order', 'validation_phase': 'syntax', 'validation_issues': [{'phase': 'syntax', 'severity': 'error', 'code': 'SQL_EXPLAIN_FAILED', 'message': "Unknown column 'bad_col'"}], 'syntax_correction_count': 2, 'semantic_correction_count': 0}
+2026-06-13 15:04:46.008 | INFO     | request_id - 1 | app.agent.nodes.validate_sql:validate_sql:44 - SQL语法错误：Unknown column 'bad_col'
+2026-06-13 15:04:46.016 | INFO     | request_id - 1 | app.agent.nodes.validate_sql_slot:validate_sql_slot:77 - 语义槽位不一致：缺少用户要求的过滤条件列：dim_region.region_name（is_precise=True）
+2026-06-13 15:04:46.017 | ERROR    | request_id - 1 | app.agent.nodes.validate_sql_slot:validate_sql_slot:43 - 语义槽位校验 解析 SQL 槽位失败，跳过语义校验: Expected table name but got <Token token_type: TokenType.SENTINEL, text: SENTINEL, line: 1, col: 1, start: 0, end: 0, comments: []>. Line 1, Col: 13.
+  select * [4mfrom[0m
+2026-06-13 15:04:46.018 | INFO     | request_id - 1 | app.agent.nodes.validate_sql:validate_sql:34 - SQL语法正确
+2026-06-13 15:06:37.941 | INFO     | request_id - 1 | app.agent.nodes.final_error:final_error:30 - SQL 修正达到上限，返回最终错误：{'type': 'final_error', 'sql': 'select bad_col from fact_order', 'validation_phase': 'syntax', 'validation_issues': [{'phase': 'syntax', 'severity': 'error', 'code': 'SQL_EXPLAIN_FAILED', 'message': "Unknown column 'bad_col'"}], 'syntax_correction_count': 2, 'semantic_correction_count': 0}
+2026-06-13 15:06:37.943 | INFO     | request_id - 1 | app.agent.nodes.validate_sql:validate_sql:44 - SQL语法错误：Unknown column 'bad_col'
+2026-06-13 15:06:37.951 | INFO     | request_id - 1 | app.agent.nodes.validate_sql_slot:validate_sql_slot:77 - 语义槽位不一致：缺少用户要求的过滤条件列：dim_region.region_name（is_precise=True）
+2026-06-13 15:06:37.952 | ERROR    | request_id - 1 | app.agent.nodes.validate_sql_slot:validate_sql_slot:43 - 语义槽位校验 解析 SQL 槽位失败，跳过语义校验: Expected table name but got <Token token_type: TokenType.SENTINEL, text: SENTINEL, line: 1, col: 1, start: 0, end: 0, comments: []>. Line 1, Col: 13.
+  select * [4mfrom[0m
+2026-06-13 15:06:37.952 | INFO     | request_id - 1 | app.agent.nodes.validate_sql:validate_sql:34 - SQL语法正确
+2026-06-13 15:23:23.825 | INFO     | request_id - efa0e3da-8136-411e-a26e-95bbdc390e83 | app.agent.nodes.extract_keywords:extract_keywords:50 - 抽取关键词成功: ['品类', '销售额', '统计 2025 年 3 月各商品品类的销量和销售额', '销量', '统计', '商品']
+2026-06-13 15:23:27.806 | ERROR    | request_id - efa0e3da-8136-411e-a26e-95bbdc390e83 | app.agent.nodes.recall_column:recall_column:67 - 召回字段信息 failed: Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}
+2026-06-13 15:34:54.267 | INFO     | request_id - 2af9befc-885a-4006-a26d-3a6c0c1464ad | app.agent.nodes.extract_keywords:extract_keywords:50 - 抽取关键词成功: ['第一季度', '统计 2025 年第一季度各大区的 GMV，并按 GMV 从高到低排序', '排序', 'GMV', '大区', '统计']
+2026-06-13 15:34:56.064 | ERROR    | request_id - 2af9befc-885a-4006-a26d-3a6c0c1464ad | app.agent.nodes.recall_value:recall_value:67 - 召回字段取值 failed: Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': '你请求的模型 "gpt-5.5" 暂不支持。可用模型：claude-opus-4-7 / claude-haiku-4-5-20251001 / claude-sonnet-4-6'}}
+2026-06-13 15:35:29.240 | INFO     | request_id - a6219ca7-e91c-4668-b30e-ec9e6e7909cf | app.agent.nodes.extract_keywords:extract_keywords:50 - 抽取关键词成功: ['第一季度', '统计 2025 年第一季度各大区的 GMV，并按 GMV 从高到低排序', '排序', 'GMV', '大区', '统计']
+2026-06-13 15:35:29.829 | ERROR    | request_id - a6219ca7-e91c-4668-b30e-ec9e6e7909cf | app.agent.nodes.recall_value:recall_value:67 - 召回字段取值 failed: Error code: 400 - {'type': 'error', 'error': {'type': 'invalid_request_error', 'message': '你请求的模型 "gpt-5.5" 暂不支持。可用模型：claude-opus-4-7 / claude-haiku-4-5-20251001 / claude-sonnet-4-6'}}
+2026-06-13 15:36:17.360 | INFO     | request_id - 3d20d8a1-b6c3-4e72-b9ae-a7c714460852 | app.agent.nodes.extract_keywords:extract_keywords:50 - 抽取关键词成功: ['统计 2025 年第一季度各大区的 GMV，并按 GMV 从高到低排序', '第一季度', '大区', 'GMV', '排序', '统计']
+2026-06-13 15:36:18.771 | ERROR    | request_id - 3d20d8a1-b6c3-4e72-b9ae-a7c714460852 | app.agent.nodes.recall_value:recall_value:67 - 召回字段取值 failed: hiService Unavailable
+2026-06-13 15:38:54.132 | INFO     | request_id - 2d968b97-b3c9-404f-aabd-4bbe066d04f7 | app.agent.nodes.extract_keywords:extract_keywords:50 - 抽取关键词成功: ['GMV', '统计 2025 年第一季度各大区的 GMV，并按 GMV 从高到低排序', '统计', '第一季度', '大区', '排序']
+2026-06-13 15:38:55.038 | ERROR    | request_id - 2d968b97-b3c9-404f-aabd-4bbe066d04f7 | app.agent.nodes.recall_column:recall_column:67 - 召回字段信息 failed: hiService Unavailable
+2026-06-13 15:38:55.039 | ERROR    | request_id - 2d968b97-b3c9-404f-aabd-4bbe066d04f7 | app.agent.nodes.recall_metric:recall_metric:69 - 召回指标信息 failed: hiService Unavailable
+2026-06-13 15:42:06.799 | INFO     | request_id - 2234f90d-6ce8-4491-964b-5af88c9e04d6 | app.agent.nodes.extract_keywords:extract_keywords:50 - 抽取关键词成功: ['第一季度', '统计', '大区', '统计 2025 年第一季度各大区的 GMV，并按 GMV 从高到低排序', '排序', 'GMV']
+2026-06-13 15:42:08.285 | ERROR    | request_id - 2234f90d-6ce8-4491-964b-5af88c9e04d6 | app.agent.nodes.recall_column:recall_column:67 - 召回字段信息 failed: hiService Unavailable
+2026-06-13 15:48:57.515 | INFO     | request_id - 1 | app.agent.nodes.extract_keywords:extract_keywords:50 - 抽取关键词成功: ['?????? 2025 ???????????? 5 ???']
+2026-06-13 15:48:58.723 | ERROR    | request_id - 1 | app.agent.nodes.recall_column:recall_column:67 - 召回字段信息 failed: Connection error.
+2026-06-13 15:49:43.739 | INFO     | request_id - 1 | app.agent.nodes.extract_keywords:extract_keywords:50 - 抽取关键词成功: ['华东地区', '销售额', '查询华东地区 2025 年第一季度销售额最高的前 5 个商品', '商品', '最高', '第一季度', '查询']
+2026-06-13 15:49:45.340 | ERROR    | request_id - 1 | app.agent.nodes.recall_value:recall_value:67 - 召回字段取值 failed: hiService Unavailable
+2026-06-13 15:55:31.575 | INFO     | request_id - 2bf75e3c-9052-42e5-b194-acebe76211a9 | app.agent.nodes.extract_keywords:extract_keywords:50 - 抽取关键词成功: ['第一季度', '排序', '统计', '统计 2025 年第一季度各大区的 GMV，并按 GMV 从高到低排序', 'GMV', '大区']
+2026-06-13 15:55:34.538 | INFO     | request_id - 2bf75e3c-9052-42e5-b194-acebe76211a9 | app.agent.nodes.recall_metric:recall_metric:65 - 检索到指标信息：['GMV', 'AOV']
+2026-06-13 15:55:35.062 | INFO     | request_id - 2bf75e3c-9052-42e5-b194-acebe76211a9 | app.agent.nodes.recall_value:recall_value:63 - 检索到字段取值：[]
+2026-06-13 15:55:35.324 | INFO     | request_id - 2bf75e3c-9052-42e5-b194-acebe76211a9 | app.agent.nodes.merge_retrieved_info:merge_retrieved_info:143 - 合并后的表信息：['dim_date', 'dim_product', 'fact_order', 'dim_region']
+2026-06-13 15:55:35.325 | INFO     | request_id - 2bf75e3c-9052-42e5-b194-acebe76211a9 | app.agent.nodes.merge_retrieved_info:merge_retrieved_info:146 - 合并后的指标信息：['GMV', 'AOV']
+2026-06-13 15:55:36.977 | INFO     | request_id - 2bf75e3c-9052-42e5-b194-acebe76211a9 | app.agent.nodes.filter_metric:filter_metric:54 - 过滤后的指标信息：['GMV']
+2026-06-13 15:55:38.706 | INFO     | request_id - 2bf75e3c-9052-42e5-b194-acebe76211a9 | app.agent.nodes.filter_table:filter_table:60 - 过滤后的表信息：['dim_date', 'fact_order', 'dim_region']
+2026-06-13 15:55:38.722 | INFO     | request_id - 2bf75e3c-9052-42e5-b194-acebe76211a9 | app.agent.nodes.add_extra_context:add_extra_context:36 - 数据库信息：{'dialect': 'mysql', 'version': '8.0.46'}
+2026-06-13 15:55:38.723 | INFO     | request_id - 2bf75e3c-9052-42e5-b194-acebe76211a9 | app.agent.nodes.add_extra_context:add_extra_context:37 - 日期信息：{'date': '2026-06-13', 'weekday': 'Saturday', 'quarter': 'Q2'}
+2026-06-13 15:55:46.817 | INFO     | request_id - 2bf75e3c-9052-42e5-b194-acebe76211a9 | app.agent.nodes.extract_query_slots:extract_query_slots:76 - 抽取的问题语义槽位：{'metrics': [{'agg': 'SUM', 'column': 'fact_order.order_amount'}], 'dimensions': ['dim_region.region_name'], 'filters': []}
+2026-06-13 15:55:56.426 | INFO     | request_id - 2bf75e3c-9052-42e5-b194-acebe76211a9 | app.agent.nodes.generate_sql:generate_sql:63 - 生成的SQL：SELECT dr.region_name AS 大区, SUM(fo.order_amount) AS GMV FROM fact_order fo JOIN dim_date dd ON fo.date_id = dd.date_id JOIN dim_region dr ON fo.region_id = dr.region_id WHERE dd.date_id BETWEEN 20250101 AND 20250331 GROUP BY dr.region_name ORDER BY GMV DESC
+2026-06-13 15:55:56.435 | INFO     | request_id - 2bf75e3c-9052-42e5-b194-acebe76211a9 | app.agent.nodes.validate_sql:validate_sql:34 - SQL语法正确
+2026-06-13 15:55:56.448 | INFO     | request_id - 2bf75e3c-9052-42e5-b194-acebe76211a9 | app.agent.nodes.validate_sql_slot:validate_sql_slot:96 - SQL 语义槽位校验通过
+2026-06-13 15:55:56.452 | INFO     | request_id - 2bf75e3c-9052-42e5-b194-acebe76211a9 | app.agent.nodes.run_sql:run_sql:29 - SQL执行结果：[{'大区': '华东', 'GMV': 107373.0}, {'大区': '华南', 'GMV': 70202.0}, {'大区': '华北', 'GMV': 41099.5}, {'大区': '西南', 'GMV': 31528.0}, {'大区': '华中', 'GMV': 28957.0}]

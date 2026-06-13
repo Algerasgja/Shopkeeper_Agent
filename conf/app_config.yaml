@@ -11,14 +11,14 @@ logging:
 
 db_meta:
   host: localhost
-  port: 3306
+  port: 3307
   user: didilili
   password: dili123
   database: meta
 
 db_dw:
   host: localhost
-  port: 3306
+  port: 3307
   user: didilili
   password: dili123
   database: dw
@@ -35,10 +35,10 @@ embedding:
 
 es:
   host: localhost
-  port: 9200
+  port: 9201
   index_name: data_agent
 
 llm:
-  model_name: Pro/zai-org/GLM-5.1
+  model_name: deepseek-v4-flash 
   api_key: ${oc.env:LLM_API_KEY}
-  base_url: https://api.siliconflow.cn/v1
+  base_url: https://api.deepseek.com

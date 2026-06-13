@@ -23,11 +23,14 @@ const nodes: FlowNode[] = [
   { step: "合并召回信息", x: 410, y: 214 },
   { step: "过滤指标信息", x: 290, y: 318 },
   { step: "过滤表信息", x: 530, y: 318 },
-  { step: "增加额外上下文", x: 410, y: 422, w: 176 },
+  { step: "添加额外上下文", x: 290, y: 422, w: 176 },
+  { step: "抽取问题语义槽位", x: 530, y: 422, w: 188 },
   { step: "生成SQL", x: 410, y: 526 },
   { step: "校验SQL", x: 410, y: 630 },
-  { step: "校正SQL", x: 670, y: 630 },
-  { step: "执行SQL", x: 410, y: 724 },
+  { step: "语义槽位校验", x: 410, y: 724, w: 176 },
+  { step: "校正SQL", x: 670, y: 724 },
+  { step: "执行SQL", x: 290, y: 828 },
+  { step: "最终错误", x: 530, y: 828 },
 ];
 
 const connectors = [
@@ -39,18 +42,22 @@ const connectors = [
   "M670 152 L670 178 L410 178 L410 208",
   "M410 254 L410 282 L290 282 L290 312",
   "M410 254 L410 282 L530 282 L530 312",
-  "M290 358 L290 386 L410 386 L410 416",
-  "M530 358 L530 386 L410 386 L410 416",
-  "M410 462 L410 520",
+  "M290 358 L290 416",
+  "M530 358 L530 416",
+  "M290 462 L290 490 L410 490 L410 520",
+  "M530 462 L530 490 L410 490 L410 520",
   "M410 566 L410 624",
   "M410 670 L410 718",
-  "M488 650 L586 650",
-  "M670 670 L670 696 L410 696 L410 718",
+  "M410 764 L410 790 L290 790 L290 822",
+  "M498 744 L586 744",
+  "M498 744 L530 744 L530 822",
+  "M670 764 L670 790 L760 790 L760 650 L488 650",
 ];
 
 const branchLabels = [
-  { text: "有误", x: 530, y: 642 },
-  { text: "无误", x: 366, y: 704 },
+  { text: "修正", x: 532, y: 736 },
+  { text: "通过", x: 320, y: 806 },
+  { text: "超限", x: 510, y: 806 },
 ];
 
 function getStatusMap(steps: StepState[]) {
@@ -127,10 +134,10 @@ export function StepRail({ steps = [] }: { steps?: StepState[] }) {
       </div>
 
       <div className="overflow-x-auto">
-        <div className="relative mx-auto h-[780px] w-[820px]">
+        <div className="relative mx-auto h-[884px] w-[820px]">
           <svg
             className="pointer-events-none absolute inset-0 h-full w-full"
-            viewBox="0 0 820 780"
+            viewBox="0 0 820 884"
             fill="none"
             aria-hidden="true"
           >
